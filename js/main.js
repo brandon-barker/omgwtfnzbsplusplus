@@ -1,5 +1,5 @@
 (function($) { // Encapsulate
-	function GetCategoryImageUrl(category) {
+	function getCategoryImageUrl(category) {
 		var categoryImgUrl = "";
 				
 		switch (category) {
@@ -87,20 +87,49 @@
 		return categoryImgUrl;
 	}
 	
+	function currentPageNumber() {		
+		// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values?page=2&tab=votes#tab-top
+		var qs = window.location.search.replace('?','').split('&'),
+	    request = {};
+		
+		$.each(qs, function(i,v) {
+		    var pair = v.split('=');
+		    return request[pair[0]] = pair[1];
+		});
+		
+		return request.p || 1;
+	}
+	
+	// Iterate through each category column and replace the standard text with an image
 	$(".nzbt_type").each(function (i) {
 		var link = $(this).children("a.linky");
 		var category = $(link).html();		
 	
-		var imgHtml = "<img src='" + GetCategoryImageUrl(category) + "' alt='" + category + "' title='" + category + "' />";
+		var imgHtml = "<img src='" + getCategoryImageUrl(category) + "' alt='" + category + "' title='" + category + "' />";
 		$(link).html(imgHtml);
-	});	
+	});		
+			 
+	var lastRlsFound = false;
 	
 	$(".nzbt_name").each(function (i) {
-		var link = $(this).children("a.linky")[0];		
-		var newTagHtml = "<span style='font-weight:bold;font-size:0.85em;color:#58cbf6'>&nbsp;NEW!</span>";
-		$(link).after(newTagHtml);
-	});
+		var link = $(this).children("a.linky")[0];
+		var rlsName = $(link).attr('title');
+		
+		if ($.cookie('lastRls') == rlsName) {
+			lastRlsFound = true;
+			return;
+		} 		
+		
+		if (!lastRlsFound && currentPageNumber() == "1") {
+			var newTagHtml = "<span style='font-weight:bold;font-size:0.85em;color:#58cbf6'>&nbsp;NEW!</span>";
+			$(link).after(newTagHtml);
+		}
+	});		
 	
-	console.log($.cookie('PHPSESSID'));
-	
+	// Update the last seen release (set to the current pages first release)		
+	if (currentPageNumber() == "1" || currentPageNumber() == 1) {
+		var firstRls = $(".nzbt_name").first().children("a.linky")[0];
+		var firstRlsName = $(firstRls).attr('title');	
+		$.cookie('lastRls', firstRlsName, { expires: 30, path: '/' });
+	}
 })(jQuery);
