@@ -1,0 +1,32 @@
+{
+  	"manifest_version": 2,
+
+  	"name": "omgwtfnzbs++",
+  	"description": "This extension adds new functionality to omgwtfnzbs.org",
+  	"version": "1.0",
+
+  	"background": {
+		"scripts": [
+			"js/libs/jquery-1.10.2.min.js",
+			"js/libs/jquery.cookie.js"		
+		]
+	},
+	"permissions":
+	[
+		"*://omgwtfnzbs.org/*",
+		"*://www.omgwtfnzbs.org/*",
+		"*://omgwtfnzbs.eu/*",
+		"*://www.omgwtfnzbs.eu/*"
+	],
+	"content_scripts": [
+		{
+			"matches": [ "*://omgwtfnzbs.org/*" ],
+			"js": [	
+				"js/libs/jquery-1.10.2.min.js",
+				"js/libs/jquery.cookie.js",
+				"js/main.js"				
+			],
+			"all_frames": true
+		}
+	]	
+}
